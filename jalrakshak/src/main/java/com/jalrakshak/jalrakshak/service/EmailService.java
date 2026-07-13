@@ -10,7 +10,7 @@ public class EmailService {
 
 	private final JavaMailSender javaMailSender;
 
-	@Value("${spring.mail.username}")
+	@Value("${MAIL_FROM:${spring.mail.username}}")
 	private String fromEmail;
 
 	public EmailService(JavaMailSender javaMailSender) {
@@ -18,7 +18,6 @@ public class EmailService {
 	}
 
 	public void sendSimpleEmail(String to, String subject, String body) {
-
 		if (to == null || to.isBlank()) {
 			return;
 		}
@@ -31,6 +30,7 @@ public class EmailService {
 			message.setText(body);
 
 			javaMailSender.send(message);
+			System.out.println("Email sent successfully to: " + to);
 
 		} catch (Exception e) {
 			System.out.println("Email sending failed: " + e.getMessage());
