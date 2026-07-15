@@ -10,6 +10,7 @@ import com.jalrakshak.jalrakshak.dto.ComplaintRequest;
 import com.jalrakshak.jalrakshak.dto.ComplaintResponse;
 import com.jalrakshak.jalrakshak.model.Complaint;
 import com.jalrakshak.jalrakshak.model.ComplaintStatus;
+import com.jalrakshak.jalrakshak.model.Role;
 import com.jalrakshak.jalrakshak.model.User;
 import com.jalrakshak.jalrakshak.model.Village;
 import com.jalrakshak.jalrakshak.repository.ComplaintRepository;
@@ -150,4 +151,76 @@ public class ComplaintService {
                 complaint.getUpdatedAt()
         );
     }
+
+	public List<ComplaintResponse> getComplaintsVisibleToUser(Long userId) {
+
+		User user = userService.getUserById(userId);
+
+		List<Complaint> complaints;
+
+		if (user.getRole() == Role.ADMIN) {
+
+
+			complaints = complaintRepository.findAll();
+
+		} else {
+
+
+			if (user.getVillage() == null) {
+				throw new RuntimeException("User is not assigned to any village");
+			}
+
+			complaints = complaintRepository.findByVillage_Id(user.getVillage().getId());
+		}
+
+		return complaints.stream().map(complaint -> {
+			ComplaintResponse response = mapToResponse(complaint);
+
+			if (user.getRole() == Role.CITIZEN || user.getRole() == Role.ASHA_WORKER) {
+				hideSensitiveComplaintFields(response);
+			}
+
+			return response;
+		}).toList();
+	}
+
+	private void hideSensitiveComplaintFields(ComplaintResponse response) {
+
+
+		response.setReportedByUserId(null);
+		response.setReportedByName("Village User");
+	}
+
+	public ComplaintResponse updateComplaintStatusByUser(Long complaintId, ComplaintStatus status, Long userId) {
+
+		User user = userService.getUserById(userId);
+
+		Complaint complaint = complaintRepository.findById(complaintId)
+				.orElseThrow(() -> new RuntimeException("Complaint not found with id: " + complaintId));
+
+		if (user.getRole() == Role.ADMIN) {
+			complaint.setStatus(status);
+			Complaint savedComplaint = complaintRepository.save(complaint);
+			notificationService.sendComplaintStatusChangedNotification(savedComplaint);
+			return mapToResponse(savedComplaint);
+		}
+
+		if (user.getRole() == Role.PANCHAYAT_OFFICER) {
+
+			if (user.getVillage() == null) {
+				throw new RuntimeException("Panchayat officer is not assigned to any village");
+			}
+
+			if (!complaint.getVillage().getId().equals(user.getVillage().getId())) {
+				throw new RuntimeException("You can update only complaints from your own village");
+			}
+
+			complaint.setStatus(status);
+			Complaint savedComplaint = complaintRepository.save(complaint);
+			notificationService.sendComplaintStatusChangedNotification(savedComplaint);
+			return mapToResponse(savedComplaint);
+		}
+
+		throw new RuntimeException("You are not allowed to update complaint status");
+	}
 }

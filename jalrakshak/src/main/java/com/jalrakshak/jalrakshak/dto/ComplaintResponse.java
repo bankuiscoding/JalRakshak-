@@ -54,40 +54,80 @@ public class ComplaintResponse {
 		return id;
 	}
 
+	public void setId(Long id) {
+		this.id = id;
+	}
+
 	public ComplaintType getComplaintType() {
 		return complaintType;
+	}
+
+	public void setComplaintType(ComplaintType complaintType) {
+		this.complaintType = complaintType;
 	}
 
 	public String getDescription() {
 		return description;
 	}
 
+	public void setDescription(String description) {
+		this.description = description;
+	}
+
 	public String getWardNumber() {
 		return wardNumber;
+	}
+
+	public void setWardNumber(String wardNumber) {
+		this.wardNumber = wardNumber;
 	}
 
 	public String getWaterSource() {
 		return waterSource;
 	}
 
+	public void setWaterSource(String waterSource) {
+		this.waterSource = waterSource;
+	}
+
 	public ComplaintStatus getStatus() {
 		return status;
+	}
+
+	public void setStatus(ComplaintStatus status) {
+		this.status = status;
 	}
 
 	public Long getVillageId() {
 		return villageId;
 	}
 
+	public void setVillageId(Long villageId) {
+		this.villageId = villageId;
+	}
+
 	public String getVillageName() {
 		return villageName;
+	}
+
+	public void setVillageName(String villageName) {
+		this.villageName = villageName;
 	}
 
 	public Long getReportedByUserId() {
 		return reportedByUserId;
 	}
 
+	public void setReportedByUserId(Long reportedByUserId) {
+		this.reportedByUserId = reportedByUserId;
+	}
+
 	public String getReportedByName() {
 		return reportedByName;
+	}
+
+	public void setReportedByName(String reportedByName) {
+		this.reportedByName = reportedByName;
 	}
 
 	public String getPhotoUrl() {
@@ -110,7 +150,16 @@ public class ComplaintResponse {
 		return createdAt;
 	}
 
+	public void setCreatedAt(LocalDateTime createdAt) {
+		this.createdAt = createdAt;
+	}
+
 	public LocalDateTime getUpdatedAt() {
 		return updatedAt;
 	}
+
+	public void setUpdatedAt(LocalDateTime updatedAt) {
+		this.updatedAt = updatedAt;
+	}
+
 }

@@ -16,7 +16,6 @@ import org.springframework.web.multipart.MultipartFile;
 
 import com.jalrakshak.jalrakshak.dto.ComplaintRequest;
 import com.jalrakshak.jalrakshak.dto.ComplaintResponse;
-import com.jalrakshak.jalrakshak.dto.UpdateComplaintStatusRequest;
 import com.jalrakshak.jalrakshak.model.ComplaintStatus;
 import com.jalrakshak.jalrakshak.model.ComplaintType;
 import com.jalrakshak.jalrakshak.service.ComplaintService;
@@ -64,12 +63,6 @@ public class ComplaintController {
 		return complaintService.getComplaintsByStatus(status);
 	}
 
-	@PutMapping("/{id}/status")
-	public ComplaintResponse updateComplaintStatus(@PathVariable Long id,
-			@Valid @RequestBody UpdateComplaintStatusRequest request) {
-		return complaintService.updateComplaintStatus(id, request.getStatus());
-	}
-
 	@PostMapping(value = "/with-photo", consumes = MediaType.MULTIPART_FORM_DATA_VALUE)
 	public ComplaintResponse createComplaintWithPhoto(@RequestParam ComplaintType complaintType,
 			@RequestParam String description, @RequestParam(required = false) String wardNumber,
@@ -84,5 +77,17 @@ public class ComplaintController {
 		request.setReportedByUserId(reportedByUserId);
 
 		return complaintService.createComplaintWithPhoto(request, photo);
+	}
+
+	@GetMapping("/visible-to-user/{userId}")
+	public List<ComplaintResponse> getComplaintsVisibleToUser(@PathVariable Long userId) {
+		return complaintService.getComplaintsVisibleToUser(userId);
+	}
+
+	@PutMapping("/{complaintId}/status/user/{userId}")
+	public ComplaintResponse updateComplaintStatusByUser(@PathVariable Long complaintId, @PathVariable Long userId,
+			@RequestParam ComplaintStatus status) {
+
+		return complaintService.updateComplaintStatusByUser(complaintId, status, userId);
 	}
 }
